@@ -40,11 +40,10 @@ export class UserController {
 
     @Delete(':id')
     async deleteUserAccount(@Param('id') userId: string){
-        const deletedUser = this.userService.deleteUser(userId);
-
-        if (deletedUser) {
-            return { message: `User with id: ${userId} deleted successfully`, user: deletedUser };
-        } else {
+        try {
+            const deletedUser = await this.userService.deleteUser(userId);
+            return { message: `User with id: ${deletedUser.id} deleted successfully`, user: deletedUser };
+        } catch (error) {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
     }
