@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import {UserCreateProfileDto} from "./dto/user.dto";
+import { UserCreateProfileDto, UserUpdateDto } from "./dto/user.dto";
 
 @Injectable()
 export class UserService {
@@ -13,22 +13,14 @@ export class UserService {
         }
     ];
 
-
     constructor() {}
-
 
     async getAllUsers(): Promise<UserCreateProfileDto[]>{
         return this.users
     }
     async createUser(userData: UserCreateProfileDto) {
-        // if (userData.age < 18) {
-        //     throw HttpException()
-        // }
-
-        // Todo add auto-id creator to new user
-
-        const newUser = { id: 'some_id', ...userData }; // Генерируйте или получайте уникальный идентификатор для нового пользователя
-
+        const id = (new Date().getMilliseconds() + 323).toString()
+        const newUser = { id: id, ...userData };
         this.users.push(newUser);
 
         return newUser;
@@ -39,12 +31,11 @@ export class UserService {
         if (user) {
             return user;
         } else {
-            // Если пользователя с указанным id не найдено, вы можете вернуть, например, 404 Not Found
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
     }
 
-    async updateUserField(userId: string, updateData: Partial<UserCreateProfileDto>) {
+    async updateUserField(userId: string, updateData: Partial<UserUpdateDto>) {
         const userIndex = this.users.findIndex((user) => user.id === userId);
 
         if (userIndex === -1) {

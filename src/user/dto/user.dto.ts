@@ -6,6 +6,8 @@ export class UserCreateProfileDto {
     status: boolean;
 }
 export class UserUpdateDto {
-
+    userName: string;
+    city: string;
+    status: boolean;
 }
 
