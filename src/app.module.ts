@@ -1,26 +1,34 @@
+import * as path from 'node:path';
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CustomConfigModule } from './config/config.module';
+import { CustomConfigService } from './config/config.service';
 import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
+    CustomConfigModule,
     TypeOrmModule.forRootAsync({
-      imports: [],
-      useFactory: () => {
+      imports: [CustomConfigModule],
+      useFactory: (customConfigService: CustomConfigService) => {
         return {
           type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'user',
-          password: 'pass',
-          database: 'march-2023',
+          host: customConfigService.db_host,
+          port: customConfigService.db_port,
+          username: customConfigService.db_username,
+          password: customConfigService.db_password,
+          database: customConfigService.db_database,
           synchronize: true,
-          entities: [UserModule],
+          entities: [
+            path.join(__dirname, 'database', '**', '*.entity{.ts,.js}'),
+          ],
         };
       },
-      inject: [],
+      inject: [CustomConfigService],
     }),
     UserModule,
   ],

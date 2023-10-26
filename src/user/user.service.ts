@@ -28,14 +28,15 @@ export class UserService {
     if (findUser) {
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     }
-    // const id = (new Date().getMilliseconds() + 323).toString();
-    // const newUser = { id: id, email: userEmail, ...userData };
-    // this.users.push(newUser);
-    //
-    // return newUser;
-    const newUser = this.userRepository.create();
-
-    return this.userRepository.save(newUser);
+    try {
+      const newUser = this.userRepository.create(userData);
+      if (!userData.city) {
+        newUser.city = 'Odessa';
+      }
+      return this.userRepository.save(newUser);
+    } catch (err) {
+      throw new HttpException('Create user failed', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async getUserById(userId: string) {
