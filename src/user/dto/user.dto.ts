@@ -6,35 +6,55 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class UserCreateProfileDto {
-  @ApiProperty()
   @IsString()
   userName: string;
 
-  @ApiProperty({ required: true, example: 'userTest@gmail.com' })
   @IsString()
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ required: true, example: 'Lviv' })
-  city: string;
+  @IsOptional()
+  @IsString()
+  city?: string;
 
-  @ApiProperty()
   @IsNumber()
   @IsOptional()
   age: number;
 
-  @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  status: boolean;
+  status?: boolean;
 }
 
 export class UserUpdateDto {
   userName: string;
   city: string;
   status: boolean;
+}
+
+export class UserCreateResponseDto {
+  userName: string;
+  email: string;
+  city: string;
+  age: number;
+  status: boolean;
+  createdAt: Date;
+  id: string;
+}
+
+export class UserDeleteResponseDto {
+  message: string;
+  user?: {
+    userName: string;
+    email: string;
+    city: string;
+    age: number;
+    status: boolean;
+    createdAt: string;
+    updatedAt: string;
+    id: string;
+  };
 }
