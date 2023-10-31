@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -8,10 +10,16 @@ import { UserRepository } from './user.repository';
 import { UserEntity } from '../database/entities/user.entity';
 import { UserCreateRequestDto } from './dto/request/user-create.request.dto';
 import { UsersListResponseDto } from './dto/response/users-list.response.dto';
+import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly authService: AuthService,
+    @InjectRedisClient() private redisClient: RedisClient,
+  ) {}
 
   public async getAllUsers(): Promise<UsersListResponseDto[]> {
     return this.userRepository.find();
@@ -61,5 +69,24 @@ export class UserService {
     } else {
       return user;
     }
+  }
+
+  async login(data: any) {
+    const findUser = await this.userRepository.findOne({
+      where: { email: data.email },
+    });
+    if (!findUser) {
+      throw new HttpException(
+        'Email or password is not correct',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const token = await this.authService.signIn({
+      id: findUser.id,
+    });
+
+    await this.redisClient.setEx(token, 10000, token);
+
+    return { token };
   }
 }

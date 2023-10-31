@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ import { UserDetailsResponseDto } from './dto/response/user-details.response.dto
 import { UserUpdateRequestDto } from './dto/request/user-update.request.dto';
 import { UserCreateRequestDto } from './dto/request/user-create.request.dto';
 import { UsersListResponseDto } from './dto/response/users-list.response.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('User')
 @Controller('users')
@@ -38,6 +40,7 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Get user by id' })
+  @UseGuards(AuthGuard())
   @Get(':userId')
   async getUserById(
     @Param('userId') userId: string,
