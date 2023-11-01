@@ -13,6 +13,9 @@ export class UserEntity extends CreatedUpdatedModel {
   email: string;
 
   @Column({ type: 'text', nullable: true })
+  password: string;
+
+  @Column({ type: 'text', nullable: true })
   city: string;
 
   @Column({ type: 'int' })

@@ -25,6 +25,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: 'Get all users' })
+  @UseGuards(AuthGuard())
   @Get()
   async getAllUsers(): Promise<UsersListResponseDto[]> {
     return await this.userService.getAllUsers();
@@ -64,5 +65,10 @@ export class UserController {
   @Delete(':userId')
   async deleteUser(@Param('userId') userId: string): Promise<void> {
     await this.userService.deleteUser(userId);
+  }
+
+  @Post('login')
+  async login(@Body() body: any) {
+    return await this.userService.login(body);
   }
 }

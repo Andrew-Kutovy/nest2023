@@ -33,6 +33,7 @@ export class UserService {
       throw new BadRequestException('User already exist');
     }
     const newUser = this.userRepository.create(dto);
+
     if (!dto.city) {
       newUser.city = 'Odessa';
     }
